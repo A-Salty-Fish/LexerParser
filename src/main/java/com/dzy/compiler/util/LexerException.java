@@ -11,7 +11,7 @@ public class LexerException extends Exception{
     public LexerException() {
         super();
     }
-    public LexerException(String s) {
-        super(s);
+    public LexerException(String message, String errorInput) {
+        super(message+":"+errorInput);
     }
 }

@@ -52,6 +52,7 @@ public class WordAnalyze {
     {
         return Character.isDigit(digit);
     }
+    // 打印二元组
     void printResult(StringBuilder result, WordKind wordKind) throws LexerException {
         switch (wordKind) {
             case keyWord:
@@ -70,15 +71,15 @@ public class WordAnalyze {
                 System.out.println("运算符"+"\t"+ wordKind.ordinal() +"\t"+result);
                 return;
             default:
-                throw new LexerException("识别错误");
+                return;
         }
     }
     //词法分析
     public void analyze(char[] chars) throws LexerException {
-        StringBuilder arr = new StringBuilder();
+//        StringBuilder arr = new StringBuilder();
         for(int i = 0;i< chars.length;i++) {
             ch = chars[i];
-            arr = new StringBuilder();
+            StringBuilder arr = new StringBuilder();
             // 跳过无意义的输入
             if(ch == ' '||ch == '\t'||ch == '\n'||ch == '\r') {
                 continue;
@@ -100,18 +101,47 @@ public class WordAnalyze {
                     printResult(arr,WordKind.valName);
                 }
             }
-            // 小数
+            // 十进制小数\整数 支持.xxxx写法
             else if(isDigit(ch)||(ch == '.'))
             {
-                while(isDigit(ch)||(ch == '.'&&isDigit(chars[++i])))
-                {
-                    if(ch == '.') {
-                        i--;
-                    }
+                //.xxxx写法
+                if (ch == '.') {
                     arr.append(ch);
-                    ch = chars[++i];
+                    i++;
+                    ch = chars[i];
+                    while (isDigit(ch)) {
+                        arr.append(ch);
+                        i++;
+                        ch = chars[i];
+                    }
+                    if ((arr.length()==1)||(isLetter(ch))) {
+                        throw new LexerException("invalid decimal input", arr.append(ch).toString());
+                    }
                 }
-                //属于无符号常数
+                // 正常的十进制小数\整数
+                else {
+                    while(isDigit(ch)) {
+                        arr.append(ch);
+                        ch = chars[++i];
+                    }
+                    if (ch=='.') {
+                        arr.append(ch);
+                        ch = chars[++i];
+                        while(isDigit(ch)) {
+                            arr.append(ch);
+                            ch = chars[++i];
+                        }
+                        // .小数后接了个字母非法
+                        if (isLetter(ch)) {
+                            throw new LexerException("invalid decimal input", arr.append(ch).toString());
+                        }
+                    }
+                    // 整数后接字母非法
+                    if (isLetter(ch)) {
+                        throw new LexerException("invalid decimal input", arr.append(ch).toString());
+                    }
+                }
+                //属于常数
                 printResult(arr, WordKind.constNum);
             }
             else {
@@ -168,7 +198,7 @@ public class WordAnalyze {
                             }
                         }break;
                         //无识别
-                        default: printResult(arr,WordKind.None);
+                        default: throw new LexerException("Inlegal character", String.valueOf(ch));
                     }
             }
         }
