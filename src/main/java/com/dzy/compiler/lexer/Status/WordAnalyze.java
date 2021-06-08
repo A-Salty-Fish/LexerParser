@@ -8,6 +8,8 @@ package com.dzy.compiler.lexer.Status;
  * @date 2021/6/89:56
  */
 
+import com.dzy.compiler.util.LexerException;
+
 import java.util.HashSet;
 
 /**
@@ -18,11 +20,12 @@ import java.util.HashSet;
  */
 public class WordAnalyze {
     private enum WordKind{
+        None,
         keyWord,
         valName,
         borderSign,
-        Const,
-        None
+        constNum,
+        operator
     }
     private String keyWord[] = {"break","begin","end","if","else","while",};
     private HashSet<String> keyWordSet = new HashSet<String>(){{
@@ -49,30 +52,55 @@ public class WordAnalyze {
     {
         return Character.isDigit(digit);
     }
+    void printResult(StringBuilder result, WordKind wordKind) throws LexerException {
+        switch (wordKind) {
+            case keyWord:
+                System.out.println("关键字"+"\t"+ wordKind.ordinal() +"\t"+result);
+                return;
+            case valName:
+                System.out.println("标识符"+"\t"+ wordKind.ordinal() +"\t"+result);
+                return;
+            case borderSign:
+                System.out.println("分界符"+"\t"+ wordKind.ordinal() +"\t"+result);
+                return;
+            case constNum:
+                System.out.println("常数  "+"\t"+ wordKind.ordinal() +"\t"+result);
+                return;
+            case operator:
+                System.out.println("运算符"+"\t"+ wordKind.ordinal() +"\t"+result);
+                return;
+            default:
+                throw new LexerException("识别错误");
+        }
+    }
     //词法分析
-    public void analyze(char[] chars)
-    {
-        String arr = "";
+    public void analyze(char[] chars) throws LexerException {
+        StringBuilder arr = new StringBuilder();
         for(int i = 0;i< chars.length;i++) {
             ch = chars[i];
-            arr = "";
-            if(ch == ' '||ch == '\t'||ch == '\n'||ch == '\r'){}
+            arr = new StringBuilder();
+            // 跳过无意义的输入
+            if(ch == ' '||ch == '\t'||ch == '\n'||ch == '\r') {
+                continue;
+            }
+            // 处理字母输入
             else if(isLetter(ch)){
                 while(isLetter(ch)||isDigit(ch)){
-                    arr += ch;
+                    arr.append(ch);
                     ch = chars[++i];
                 }
                 //回退一个字符
                 i--;
-                if(isKey(arr)){
+                if(isKey(arr.toString())){
                     //关键字
-                    System.out.println(arr+"\t4"+"\t关键字");
+                    printResult(arr,WordKind.keyWord);
                 }
                 else{
                     //标识符
-                    System.out.println(arr+"\t4"+"\t标识符");
+                    printResult(arr,WordKind.valName);
                 }
             }
+            // 小数
             else if(isDigit(ch)||(ch == '.'))
             {
                 while(isDigit(ch)||(ch == '.'&&isDigit(chars[++i])))
@@ -80,66 +108,67 @@ public class WordAnalyze {
                     if(ch == '.') {
                         i--;
                     }
-                    arr = arr + ch;
+                    arr.append(ch);
                     ch = chars[++i];
                 }
                 //属于无符号常数
-                System.out.println(arr+"\t5"+"\t常数");
+                printResult(arr, WordKind.constNum);
             }
             else {
+                StringBuilder c = new StringBuilder();
+                c.append(ch);
                 switch(ch){
                         //运算符
-                        case '+':System.out.println(ch+"\t2"+"\t运算符");break;
-                        case '-':System.out.println(ch+"\t2"+"\t运算符");break;
-                        case '*':System.out.println(ch+"\t2"+"\t运算符");break;
-                        case '/':System.out.println(ch+"\t2"+"\t运算符");break;
+                        case '+':
+                        case '-':
+                        case '*':
+                        case '/':
+                            printResult(c,WordKind.operator);
+                            ;break;
                         //分界符
-                        case '(':System.out.println(ch+"\t3"+"\t分界符");break;
-                        case ')':System.out.println(ch+"\t3"+"\t分界符");break;
-                        case '[':System.out.println(ch+"\t3"+"\t分界符");break;
-                        case ']':System.out.println(ch+"\t3"+"\t分界符");break;
-                        case ';':System.out.println(ch+"\t3"+"\t分界符");break;
-                        case '{':System.out.println(ch+"\t3"+"\t分界符");break;
-                        case '}':System.out.println(ch+"\t3"+"\t分界符");break;
-                        //运算符
+                        case '(':
+                        case ')':
+                        case '[':
+                        case ']':
+                        case ';':
+                        case '{':
+                        case '}':
+                            printResult(c,WordKind.borderSign);
+                            break;
+                        //运算符 == 和 =
                         case '=':{
                             ch = chars[++i];
                             if(ch == '=') {
-                                System.out.println("=="+"\t2"+"\t运算符");
+                                printResult(new StringBuilder("=="), WordKind.operator);
                             } else {
-                                System.out.println("="+"\t2"+"\t运算符");
+                                printResult(new StringBuilder("="), WordKind.operator);
                                 i--;
                             }
-                        }break;
-                        case ':':{
-                            ch = chars[++i];
-                            if(ch == '=') {
-                                System.out.println(":="+"\t2"+"\t运算符");
-                            } else {
-                                System.out.println(":"+"\t2"+"\t运算符");
-                                i--;
-                            }
-                        }break;
+                        }
+                        break;
+                        // 运算符 >= 和 =
                         case '>':{
                             ch = chars[++i];
                             if(ch == '=') {
-                                System.out.println(">="+"\t2"+"\t运算符");
+                                printResult(new StringBuilder(">="), WordKind.operator);
                             } else {
-                                System.out.println(">"+"\t2"+"\t运算符");
+                                printResult(new StringBuilder(">"), WordKind.operator);
                                 i--;
                             }
-                        }break;
+                        }
+                        break;
+                        // 运算符 <= 和 =
                         case '<':{
                             ch = chars[++i];
                             if(ch == '=') {
-                                System.out.println("<="+"\t2"+"\t运算符");
+                                printResult(new StringBuilder("<="), WordKind.operator);
                             } else {
-                                System.out.println("<"+"\t2"+"\t运算符");
+                                printResult(new StringBuilder("<"), WordKind.operator);
                                 i--;
                             }
                         }break;
                         //无识别
-                        default: System.out.println(ch+"\t6"+"\t无识别符");
+                        default: printResult(arr,WordKind.None);
                     }
             }
         }

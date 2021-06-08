@@ -44,6 +44,7 @@ public class LexerTest {
             char buf[] = new char[length+1];
             reader.read(buf);
             reader.close();
+            buf[length] = ' ';
             new WordAnalyze().analyze(buf);
         } catch (Exception e) {
             System.out.println(e.getMessage());
