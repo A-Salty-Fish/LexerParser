@@ -10,9 +10,11 @@ package com.dzy.compiler.lexer.Status;
 public class MyTransaction {
     public Status curStatus;
 
-    public MyAction action;
+    public Character character;
 
     public Status nxtStatus;
+
+    public MyEvent handleEvent;
 
     private MyTransaction() {
 
@@ -22,18 +24,23 @@ public class MyTransaction {
         return new MyTransaction();
     }
 
-    public MyTransaction currentStatus(Status status) {
+    public MyTransaction setCurStatus(Status status) {
         this.curStatus = status;
         return this;
     }
 
-    public MyTransaction handleAction(MyAction action) {
-        this.action = action;
+    public MyTransaction setAction(Character character) {
+        this.character = character;
         return this;
     }
 
-    public MyTransaction nextStatus(Status status) {
+    public MyTransaction setNxtStatus(Status status) {
         this.nxtStatus = status;
+        return this;
+    }
+
+    public MyTransaction setEvent(MyEvent event) {
+        this.handleEvent = event;
         return this;
     }
 }

@@ -9,6 +9,7 @@ package com.dzy.compiler.lexer.Status;
  */
 public enum Status {
     begin,
+    space,
     alhpa,
     num,
     end
