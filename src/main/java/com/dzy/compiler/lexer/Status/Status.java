@@ -7,7 +7,9 @@ package com.dzy.compiler.lexer.Status;
  * @description: 状态基类
  * @date 2021/6/721:21
  */
-public class Status {
-    // 已经吞入的输入
-    public StringBuilder input;
+public enum Status {
+    begin,
+    alhpa,
+    num,
+    end
 }
