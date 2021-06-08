@@ -1,5 +1,8 @@
 package com.dzy.compiler.lexer;
 
+import com.dzy.compiler.lexer.Status.WordAnalyze;
+import com.dzy.compiler.util.LexerException;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,5 +30,9 @@ public class Lexer {
             }
         }
         return output;
+    }
+
+    public List<String> lex(char[] input) throws LexerException {
+        return new WordAnalyze().analyze(input);
     }
 }

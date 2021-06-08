@@ -11,6 +11,8 @@ package com.dzy.compiler.lexer.Status;
 import com.dzy.compiler.util.LexerException;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 此程序是通过将文件的字符读取到字符数组中去，然后遍历数组，将读取的字符进行
@@ -53,30 +55,25 @@ public class WordAnalyze {
         return Character.isDigit(digit);
     }
     // 打印二元组
-    void printResult(StringBuilder result, WordKind wordKind) throws LexerException {
+    String getResult(StringBuilder result, WordKind wordKind) throws LexerException {
         switch (wordKind) {
             case keyWord:
-                System.out.println("关键字"+"\t"+ wordKind.ordinal() +"\t"+result);
-                return;
+                return ("关键字" + "\t" + wordKind.ordinal() + "\t" + result);
             case valName:
-                System.out.println("标识符"+"\t"+ wordKind.ordinal() +"\t"+result);
-                return;
+                return ("标识符"+"\t"+ wordKind.ordinal() +"\t"+result);
             case borderSign:
-                System.out.println("分界符"+"\t"+ wordKind.ordinal() +"\t"+result);
-                return;
+                return ("分界符"+"\t"+ wordKind.ordinal() +"\t"+result);
             case constNum:
-                System.out.println("常数  "+"\t"+ wordKind.ordinal() +"\t"+result);
-                return;
+                return ("常数  "+"\t"+ wordKind.ordinal() +"\t"+result);
             case operator:
-                System.out.println("运算符"+"\t"+ wordKind.ordinal() +"\t"+result);
-                return;
+                return ("运算符"+"\t"+ wordKind.ordinal() +"\t"+result);
             default:
-                return;
+                return "";
         }
     }
     //词法分析
-    public void analyze(char[] chars) throws LexerException {
-//        StringBuilder arr = new StringBuilder();
+    public List<String> analyze(char[] chars) throws LexerException {
+        List<String> results = new LinkedList<>();
         for(int i = 0;i< chars.length;i++) {
             ch = chars[i];
             StringBuilder arr = new StringBuilder();
@@ -94,11 +91,11 @@ public class WordAnalyze {
                 i--;
                 if(isKey(arr.toString())){
                     //关键字
-                    printResult(arr,WordKind.keyWord);
+                    results.add(getResult(arr,WordKind.keyWord));
                 }
                 else{
                     //标识符
-                    printResult(arr,WordKind.valName);
+                    results.add(getResult(arr,WordKind.valName));
                 }
             }
             // 十进制小数\整数 支持.xxxx写法
@@ -142,7 +139,7 @@ public class WordAnalyze {
                     }
                 }
                 //属于常数
-                printResult(arr, WordKind.constNum);
+                results.add(getResult(arr, WordKind.constNum));
             }
             else {
                 StringBuilder c = new StringBuilder();
@@ -153,7 +150,7 @@ public class WordAnalyze {
                         case '-':
                         case '*':
                         case '/':
-                            printResult(c,WordKind.operator);
+                            results.add(getResult(c,WordKind.operator));
                             ;break;
                         //分界符
                         case '(':
@@ -163,15 +160,15 @@ public class WordAnalyze {
                         case ';':
                         case '{':
                         case '}':
-                            printResult(c,WordKind.borderSign);
+                            results.add(getResult(c,WordKind.borderSign));
                             break;
                         //运算符 == 和 =
                         case '=':{
                             ch = chars[++i];
                             if(ch == '=') {
-                                printResult(new StringBuilder("=="), WordKind.operator);
+                                results.add(getResult(new StringBuilder("=="), WordKind.operator));
                             } else {
-                                printResult(new StringBuilder("="), WordKind.operator);
+                                results.add(getResult(new StringBuilder("="), WordKind.operator));
                                 i--;
                             }
                         }
@@ -180,9 +177,9 @@ public class WordAnalyze {
                         case '>':{
                             ch = chars[++i];
                             if(ch == '=') {
-                                printResult(new StringBuilder(">="), WordKind.operator);
+                                results.add(getResult(new StringBuilder(">="), WordKind.operator));
                             } else {
-                                printResult(new StringBuilder(">"), WordKind.operator);
+                                results.add(getResult(new StringBuilder(">"), WordKind.operator));
                                 i--;
                             }
                         }
@@ -191,9 +188,9 @@ public class WordAnalyze {
                         case '<':{
                             ch = chars[++i];
                             if(ch == '=') {
-                                printResult(new StringBuilder("<="), WordKind.operator);
+                                results.add(getResult(new StringBuilder("<="), WordKind.operator));
                             } else {
-                                printResult(new StringBuilder("<"), WordKind.operator);
+                                results.add(getResult(new StringBuilder("<"), WordKind.operator));
                                 i--;
                             }
                         }break;
@@ -202,5 +199,6 @@ public class WordAnalyze {
                     }
             }
         }
+        return results;
     }
 }
