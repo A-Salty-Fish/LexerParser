@@ -29,7 +29,7 @@ public class WordAnalyze {
         constNum,
         operator
     }
-    private String keyWord[] = {"break","begin","end","if","else","while",};
+//    private String keyWord[] = {"break","begin","end","if","else","while"};
     private HashSet<String> keyWordSet = new HashSet<String>(){{
         add("break");
         add("end");
@@ -38,6 +38,8 @@ public class WordAnalyze {
         add("else");
         add("while");
     }};
+    private String[] borderSigns = {"(",")","[","]","{","}",";"};
+    private String[] operators = {"+","-","*","/","<","<=",">",">=","=","=="};
     private char ch;
     //判断是否是关键字
     boolean isKey(String str)
@@ -135,7 +137,7 @@ public class WordAnalyze {
                     }
                     // 整数后接字母非法
                     if (isLetter(ch)) {
-                        throw new LexerException("invalid decimal input", arr.append(ch).toString());
+                        throw new LexerException("invalid decimal or val input", arr.append(ch).toString());
                     }
                 }
                 //属于常数
