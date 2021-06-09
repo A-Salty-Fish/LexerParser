@@ -124,10 +124,24 @@ public class Parser {
                 if (terminals.size()==0) {
                     return false;
                 }
+                System.out.println(terminals.get(0));
                 // ε
                 if (")".equals(getWordName(terminals.get(0)))) {
-
+                    return true;
                 }
+                else {
+                    if (!getWordKind(terminals.get(0)).equals(WordKind.valName)) {
+                        throwExceptionWithLine("invalid function args");
+                    }
+                    popTerminal();// 移除一个参数
+                    if(",".equals(getWordName(terminals.get(0)))) {
+                        popTerminal();
+                    }
+                    return parse(Nonterminal.FUNCTIONARGS);
+                }
+            }
+            case BODY: {
+                
                 break;
             }
             default:
