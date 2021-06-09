@@ -1,6 +1,9 @@
 package com.dzy.compiler.parser;
 
 import com.dzy.compiler.lexer.Lexer;
+import com.dzy.compiler.util.LexerException;
+import com.dzy.compiler.util.Nonterminal;
+import com.dzy.compiler.util.ParserException;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -34,5 +37,19 @@ public class ParserTest {
 
         }
 
+    }
+
+    @Test
+    public void testParser() {
+        Lexer lexer = new Lexer();
+        List<String> results = null;
+        try {
+            results = lexer.lex(lexer.readFile("E:\\\\data.txt"));
+            Parser parser = new Parser();
+            List<String> terminals = parser.wordsToTerminal(results);
+            parser.parse(Nonterminal.START);
+        } catch (LexerException | ParserException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

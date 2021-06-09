@@ -30,6 +30,7 @@ public class WordAnalyze {
         add("void");
         add("end");
         add("begin");
+        add("return");
         add("if");
         add("else");
         add("while");
@@ -172,6 +173,7 @@ public class WordAnalyze {
                     case ';':
                     case '{':
                     case '}':
+                    case ',':
                         results.add(getResult(c, WordKind.borderSign));
                         break;
                     //运算符 == 和 =

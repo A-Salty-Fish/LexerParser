@@ -11,7 +11,7 @@ public class ParserException extends Exception{
     ParserException() {
         super();
     }
-    ParserException(String message, String line) {
-        super(message+" at line "+line);
+    public ParserException(String message, String line) {
+        super(message+" at line:"+line);
     }
 }

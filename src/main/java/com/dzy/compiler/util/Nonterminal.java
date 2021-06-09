@@ -23,7 +23,7 @@ public enum Nonterminal {
     START -> FUNCTION START | ε
     FUNCTION -> void valName \( FUNCTIONARGS \) \{ BODY \} | num valName \( FUNCTIONARGS \) \{ BODY return OPERATION \}
     FUNCTIONARGS -> valName \, FUNCTIONARGS | valName | ε
-    BODY -> { LOOP | LOGIC | ASSIGNMENT | BRANCH } BODY | ε
+    BODY -> { LOOP | ASSIGNMENT | BRANCH } BODY | ε
     LOOP -> while \( LOGIC \) \{ BODY \}
     LOGIC -> valName operator LOGIC | valName
     ASSIGNMENT -> valName = OPERATION ;
