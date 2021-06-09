@@ -1,5 +1,7 @@
 package com.dzy.compiler.parser;
 
+import com.dzy.compiler.util.WordKind;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class Parser {
         List<String> result = new LinkedList<>();
         for (String word: lexerOutput) {
             String[] words = word.split("\t");
-            System.out.println(words[2]);
+            result.add(words[1]+"\t"+words[2]);
         }
         return result;
     }

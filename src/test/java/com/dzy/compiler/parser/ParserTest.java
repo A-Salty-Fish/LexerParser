@@ -25,7 +25,8 @@ public class ParserTest {
             Lexer lexer = new Lexer();
             List<String> results = lexer.lex(lexer.readFile("E:\\\\data.txt"));
             Parser parser = new Parser();
-            parser.wordsToTerminal(results);
+            List<String> terminals = parser.wordsToTerminal(results);
+            terminals.forEach(terminal -> System.out.println(terminal));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
