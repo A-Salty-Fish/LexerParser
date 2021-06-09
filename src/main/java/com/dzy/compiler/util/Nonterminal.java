@@ -20,9 +20,8 @@ public enum Nonterminal {
 }
 
 /* 文法 大写非终结 小写终结 \转义
-
     START -> FUNCTION START | ε
-    FUNCTION -> keyWord valName \( FUNCTIONARGS \) \{ BODY \}
+    FUNCTION -> void valName \( FUNCTIONARGS \) \{ BODY \} | num valName \( FUNCTIONARGS \) \{ BODY return OPERATION \}
     FUNCTIONARGS -> valName \, FUNCTIONARGS | valName | ε
     BODY -> { LOOP | LOGIC | ASSIGNMENT | BRANCH } BODY | ε
     LOOP -> while \( LOGIC \) \{ BODY \}
@@ -30,5 +29,4 @@ public enum Nonterminal {
     ASSIGNMENT -> valName = OPERATION ;
     OPERATION -> { constNum | valName } operator OPERATION | constNum | valName
     BRANCH -> if \( LOGIC \) \{ BODY \} else \{ BODY \} | if \( LOGIC \) \{ BODY \}
-
  */

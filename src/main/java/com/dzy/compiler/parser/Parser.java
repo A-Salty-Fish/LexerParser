@@ -1,5 +1,6 @@
 package com.dzy.compiler.parser;
 
+import com.dzy.compiler.util.Nonterminal;
 import com.dzy.compiler.util.WordKind;
 
 import java.util.LinkedList;
@@ -20,11 +21,32 @@ public class Parser {
             String[] words = word.split("\t");
             result.add(words[1]+"\t"+words[2]);
         }
+        terminals = result;
         return result;
     }
 
-//    public boolean parse() {
-//
-//    }
+    List<String> terminals = new LinkedList<>();
+
+    public boolean parse(Nonterminal nonterminal) {
+        switch (nonterminal) {
+            // START -> FUNCTION START | ε
+            case START: {
+                if (terminals.size()==0) { // ε
+                    return true;
+                }
+                else {
+                    terminals = terminals.subList(0,terminals.size());
+                    return parse(Nonterminal.FUNCTION) && parse(Nonterminal.START);
+                }
+            }
+            case FUNCTION: {
+                if (terminals.size() == 0) {
+
+                }
+            }
+            default:
+                return false;
+        }
+    }
 
 }

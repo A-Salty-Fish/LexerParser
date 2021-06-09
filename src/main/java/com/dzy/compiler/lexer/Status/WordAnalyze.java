@@ -26,6 +26,7 @@ public class WordAnalyze {
     //    private String keyWord[] = {"break","begin","end","if","else","while"};
     private HashSet<String> keyWordSet = new HashSet<String>() {{
         add("break");
+        add("num");
         add("void");
         add("end");
         add("begin");
@@ -71,6 +72,9 @@ public class WordAnalyze {
             case operator:
                 result = ("运算符" + "\t" + wordKind.ordinal() + "\t" + input);
                 break;
+            case None:
+                result = ("换行符" + "\t" + wordKind.ordinal() + "\t" + input);
+                break;
             default:
                 result = "";
         }
@@ -85,6 +89,9 @@ public class WordAnalyze {
             ch = chars[i];
             StringBuilder arr = new StringBuilder();
             // 跳过无意义的输入
+            if (ch=='\n') {
+                results.add(getResult(new StringBuilder("\\n"),WordKind.None));
+            }
             if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
                 continue;
             }
