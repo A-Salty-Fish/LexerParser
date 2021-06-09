@@ -57,21 +57,29 @@ public class WordAnalyze {
         return Character.isDigit(digit);
     }
     // 打印二元组
-    String getResult(StringBuilder result, WordKind wordKind) throws LexerException {
+    String getResult(StringBuilder input, WordKind wordKind) throws LexerException {
+        String result;
         switch (wordKind) {
             case keyWord:
-                return ("关键字" + "\t" + wordKind.ordinal() + "\t" + result);
+                result = ("关键字" + "\t" + wordKind.ordinal() + "\t" + input);
+                break;
             case valName:
-                return ("标识符"+"\t"+ wordKind.ordinal() +"\t"+result);
+                result = ("标识符"+"\t"+ wordKind.ordinal() +"\t"+input);
+                break;
             case borderSign:
-                return ("分界符"+"\t"+ wordKind.ordinal() +"\t"+result);
+                result = ("分界符"+"\t"+ wordKind.ordinal() +"\t"+input);
+                break;
             case constNum:
-                return ("常数  "+"\t"+ wordKind.ordinal() +"\t"+result);
+                result = ("常数  "+"\t"+ wordKind.ordinal() +"\t"+input);
+                break;
             case operator:
-                return ("运算符"+"\t"+ wordKind.ordinal() +"\t"+result);
+                result = ("运算符"+"\t"+ wordKind.ordinal() +"\t"+input);
+                break;
             default:
-                return "";
+                result =  "";
         }
+        System.out.println(result);
+        return result;
     }
     //词法分析
     public List<String> analyze(char[] chars) throws LexerException {

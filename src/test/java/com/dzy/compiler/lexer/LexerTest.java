@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,6 +37,7 @@ public class LexerTest {
     public void testWordAna() {
 
         File file = new File("E:\\data.txt");//定义一个file对象，用来初始化FileReader
+        List<String> results = new LinkedList<>();
         try {
             FileReader reader = new FileReader(file);//定义一个fileReader对象，用来初始化BufferedReader
             int length = (int) file.length();
@@ -45,10 +47,13 @@ public class LexerTest {
             reader.read(buf);
             reader.close();
             buf[length] = ' ';
-            List<String> results = new Lexer().lex(buf);
-            for (String row:results) System.out.println(row);
+            results = new Lexer().lex(buf);
         } catch (Exception e) {
+//            for (String row:results) System.out.println(row);
             System.out.println(e.getMessage());
+        }
+        finally {
+
         }
     }
 }
