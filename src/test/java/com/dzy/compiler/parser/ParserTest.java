@@ -1,6 +1,6 @@
-package com.dzy.compiler.lexer;
+package com.dzy.compiler.parser;
 
-import com.dzy.compiler.lexer.Status.WordAnalyze;
+import com.dzy.compiler.lexer.Lexer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -11,38 +11,27 @@ import java.util.List;
 
 /**
  * @author dzy
- * @title: LexerTest
+ * @title: ParserTest
  * @projectName compiler
  * @description: TODO
- * @date 2021/6/721:40
+ * @date 2021/6/919:56
  */
 @SpringBootTest
-public class LexerTest {
-
-    String input = "a,b,c,d;\n" +
-            "if a > b \n" +
-            "then {return c+d} \n" +
-            "else {return c-d}; \n";
+public class ParserTest {
 
     @Test
-    public void testPreHandle() {
-        List<String> output = new Lexer().preHandle(input);
-        for (String row:output) {
-            System.out.println(row);
-        }
-        System.out.println(output.size());
-    }
-
-    @Test
-    public void testWordAna() {
+    public void testWordsToTerminal() {
         try {
             Lexer lexer = new Lexer();
             List<String> results = lexer.lex(lexer.readFile("E:\\\\data.txt"));
+            Parser parser = new Parser();
+            parser.wordsToTerminal(results);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         finally {
 
         }
+
     }
 }

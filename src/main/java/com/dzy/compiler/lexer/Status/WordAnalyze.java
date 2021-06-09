@@ -9,6 +9,7 @@ package com.dzy.compiler.lexer.Status;
  */
 
 import com.dzy.compiler.util.LexerException;
+import com.dzy.compiler.util.WordKind;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -21,14 +22,6 @@ import java.util.List;
  * @author
  */
 public class WordAnalyze {
-    private enum WordKind {
-        None,
-        keyWord,
-        valName,
-        borderSign,
-        constNum,
-        operator
-    }
 
     //    private String keyWord[] = {"break","begin","end","if","else","while"};
     private HashSet<String> keyWordSet = new HashSet<String>() {{
@@ -80,7 +73,7 @@ public class WordAnalyze {
             default:
                 result = "";
         }
-        System.out.println(result);
+//        System.out.println(result);
         return result;
     }
 

@@ -1,5 +1,8 @@
 package com.dzy.compiler.parser;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * @author dzy
  * @title: Parser
@@ -8,22 +11,14 @@ package com.dzy.compiler.parser;
  * @date 2021/6/919:18
  */
 public class Parser {
-    private enum Terminal{
-        keyWord,
-        valName,
-        borderSign,
-        constNum,
-        operator,
+    // 把lexer输出转换成输入格式
+    public List<String> wordsToTerminal(List<String> lexerOutput) {
+        List<String> result = new LinkedList<>();
+        for (String word: lexerOutput) {
+            String[] words = word.split("\t");
+            System.out.println(words[2]);
+        }
+        return result;
     }
-
-    public enum NoneTerminal {
-        program, // 程序
-        loop, // 循环
-        logic, // 条件
-        Operation, // 算数
-        assignment, // 赋值
-        branch, // 分支
-    }
-
 
 }
