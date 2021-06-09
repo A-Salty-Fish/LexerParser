@@ -26,6 +26,7 @@ public class WordAnalyze {
     //    private String keyWord[] = {"break","begin","end","if","else","while"};
     private HashSet<String> keyWordSet = new HashSet<String>() {{
         add("break");
+        add("void");
         add("end");
         add("begin");
         add("if");
