@@ -26,11 +26,11 @@ public class LexerTest {
 
     @Test
     public void testPreHandle() {
-        List<String> output = new Lexer().preHandle(input);
-        for (String row:output) {
-            System.out.println(row);
-        }
-        System.out.println(output.size());
+//        List<String> output = new Lexer().preHandle(input);
+//        for (String row:output) {
+//            System.out.println(row);
+//        }
+//        System.out.println(output.size());
     }
 
     @Test
@@ -38,6 +38,9 @@ public class LexerTest {
         try {
             Lexer lexer = new Lexer();
             List<String> results = lexer.lex(lexer.readFile("E:\\\\data.txt"));
+            for (String result:results) {
+                System.out.println(result);
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

@@ -6,6 +6,7 @@ import com.dzy.compiler.util.LexerException;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,21 +23,30 @@ public class Lexer {
     public ThreadLocal<LinkedHashMap<String,String>> result;
 
     // 预处理
-    public List<String> preHandle(String input) {
+    public char[] preHandle(char[] input) {
 //        input = input.replaceAll(" ","");
-        input = input.replaceAll("\n","");
-        String[] rows = input.split(";");
-        List<String> output = new LinkedList<>();
-        for (String row: rows) {
-            if (row.length()!=0) {
-                output.add(row);
+        List<Character> tmp = new ArrayList<>();
+        for (int i=0;i<input.length;i++) {
+            // 去除注解
+            if (input[i]=='#') {
+                while(input[i]!='\n') {
+                    i++;
+                }
             }
+            tmp.add(input[i]);
         }
-        return output;
+        // 加入一个额外的空格作为EOF
+        tmp.add(' ');
+        char[] result = new char[tmp.size()];
+        for (int i=0;i<tmp.size();i++) {
+            result[i] = tmp.get(i);
+        }
+        return result;
     }
 
     public List<String> lex(char[] input) throws LexerException {
-        return new WordAnalyze().analyze(input);
+        char[] prehandled = preHandle(input);
+        return new WordAnalyze().analyze(prehandled);
     }
 
     public char[] readFile(String fileName) {
@@ -46,10 +56,9 @@ public class Lexer {
             int length = (int) file.length();
             //这里定义字符数组的时候需要多定义一个,因为词法分析器会遇到超前读取一个字符的时候，如果是最后一个
             //字符被读取，如果在读取下一个字符就会出现越界的异常
-            char buf[] = new char[length+1];
+            char buf[] = new char[length];
             reader.read(buf);
             reader.close();
-            buf[length] = ' ';
             return buf;
         } catch (Exception e) {
 //            for (String row:results) System.out.println(row);

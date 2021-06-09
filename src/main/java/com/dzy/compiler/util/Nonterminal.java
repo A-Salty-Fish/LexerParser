@@ -29,6 +29,6 @@ public enum Nonterminal {
     LOGIC -> valName operator LOGIC | valName
     ASSIGNMENT -> valName = OPERATION ;
     OPERATION -> { constNum | valName } operator OPERATION | constNum | valName
-    BRANCH -> if \( LOGIC \) \{ BODY \} else \{ BODY \}
+    BRANCH -> if \( LOGIC \) \{ BODY \} else \{ BODY \} | if \( LOGIC \) \{ BODY \}
 
  */
