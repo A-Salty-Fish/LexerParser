@@ -124,7 +124,7 @@ public class Parser {
                 if (terminals.size()==0) {
                     return false;
                 }
-                System.out.println(terminals.get(0));
+//                System.out.println(terminals.get(0));
                 // ε
                 if (")".equals(getWordName(terminals.get(0)))) {
                     return true;
@@ -141,6 +141,10 @@ public class Parser {
                 }
             }
             case BODY: {
+                // ε
+                if ("}".equals(getWordName(terminals.get(0)))) {
+                    return true;
+                }
 
                 break;
             }
