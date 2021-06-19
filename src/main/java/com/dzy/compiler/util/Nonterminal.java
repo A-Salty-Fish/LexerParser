@@ -24,9 +24,9 @@ public enum Nonterminal {
     FUNCTION -> void valName \( FUNCTIONARGS \) \{ BODY \} | num valName \( FUNCTIONARGS \) \{ BODY return OPERATION \}
     FUNCTIONARGS -> valName \, FUNCTIONARGS | valName | ε
     BODY -> { LOOP | ASSIGNMENT | BRANCH } BODY | ε
-    LOOP -> while \( LOGIC \) \{ BODY \}
-    LOGIC -> valName operator LOGIC | valName
-    ASSIGNMENT -> valName = OPERATION ;
+    LOOP -> while \( LOGIC \) \{ BODY \} | ε
+    LOGIC -> valName {operator - =} LOGIC | valName | ε
+    ASSIGNMENT -> valName \= OPERATION ; | ε
     OPERATION -> { constNum | valName } operator OPERATION | constNum | valName
     BRANCH -> if \( LOGIC \) \{ BODY \} else \{ BODY \} | if \( LOGIC \) \{ BODY \}
  */
