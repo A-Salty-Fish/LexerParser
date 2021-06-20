@@ -31,7 +31,7 @@ public class Parser {
 
     // 更新换行
     private void updateLine() {
-        while(terminals.size()!=0&&getWordName(terminals.get(0)).equals("\\n")) {
+        while(terminals.size()!=0&& "\\n".equals(getWordName(terminals.get(0)))) {
             terminals.remove(0); // 移除换行
             curLine++;
         }
@@ -53,8 +53,9 @@ public class Parser {
         return WordKind.values()[Integer.parseInt(terminal.split("\t")[0])];
     }
 
-    private void throwExceptionWithLine(String message) throws ParserException {
-        throw new ParserException(message, curLine.toString());
+    private void throwExceptionWithLine(String message, Nonterminal nonterminal) throws ParserException {
+        Integer lastLine = curLine-1;
+        throw new ParserException(nonterminal.toString() +":" + message, lastLine.toString() +"-"+ curLine.toString());
     }
 
     public boolean parse(Nonterminal nonterminal) throws ParserException {
@@ -75,44 +76,45 @@ public class Parser {
             case FUNCTION: {
                 // 参数过少
                 if (terminals.size()<2) {
-                    throwExceptionWithLine("invalid function signatures");
+                    throwExceptionWithLine("invalid function signatures",Nonterminal.FUNCTION);
                 }
                 String returnType = getWordName(terminals.get(0));
                 // 返回值错误
                 if (!"void".equals(returnType)&& !"num".equals(returnType)) {
-                    throwExceptionWithLine("invalid function return type");
+                    throwExceptionWithLine("invalid function return type",Nonterminal.FUNCTION);
                 }
                 else {
                     popTerminal(); // 移除返回值
                     WordKind funcNameType = getWordKind(terminals.get(0));
                     // 函数名错误
                     if (funcNameType!=WordKind.valName) {
-                        throwExceptionWithLine("invalid function name");
+                        throwExceptionWithLine("invalid function name",Nonterminal.FUNCTION);
                     }
                     else {
                         popTerminal(); // 移除函数名
                         // 缺少左括号
                         if (terminals.size()==0||!"(".equals(getWordName(terminals.get(0)))) {
-                            throwExceptionWithLine("missing (");
+                            throwExceptionWithLine("missing (",Nonterminal.FUNCTION);
                         }
                         popTerminal(); // 移除左括号
                         parse(Nonterminal.FUNCTIONARGS);
                         updateLine();
                         // 缺少右括号
                         if (terminals.size()==0||!")".equals(getWordName(terminals.get(0)))) {
-                            throwExceptionWithLine("missing )");
+                            throwExceptionWithLine("missing )",Nonterminal.FUNCTION);
                         }
                         popTerminal(); // 移除右括号
                         // 缺少左大括号
                         if (terminals.size()==0||!"{".equals(getWordName(terminals.get(0)))) {
-                            throwExceptionWithLine("missing {");
+                            throwExceptionWithLine("missing {",Nonterminal.FUNCTION);
                         }
                         popTerminal(); // 移除左大括号
+                        updateLine();
                         parse(Nonterminal.BODY);
                         updateLine();
                         //缺少右大括号
                         if (terminals.size()==0||!"}".equals(getWordName(terminals.get(0)))) {
-                            throwExceptionWithLine("missing }");
+                            throwExceptionWithLine("missing }",Nonterminal.FUNCTION);
                         }
                         popTerminal(); // 移除右大括号
                     }
@@ -131,22 +133,125 @@ public class Parser {
                 }
                 else {
                     if (!getWordKind(terminals.get(0)).equals(WordKind.valName)) {
-                        throwExceptionWithLine("invalid function args");
+                        throwExceptionWithLine("invalid function args",Nonterminal.FUNCTIONARGS);
                     }
                     popTerminal();// 移除一个参数
+                    updateLine();
                     if(",".equals(getWordName(terminals.get(0)))) {
                         popTerminal();
+                        updateLine();
                     }
                     return parse(Nonterminal.FUNCTIONARGS);
                 }
             }
             case BODY: {
+                updateLine();
                 // ε
                 if ("}".equals(getWordName(terminals.get(0)))) {
                     return true;
                 }
-
-                break;
+                updateLine();
+                // BODY -> { while LOOP | valName ASSIGNMENT | if BRANCH } BODY
+                if ("while".equals(getWordName(terminals.get(0)))) {
+                    popTerminal(); // 移除while
+                    updateLine();
+                    return parse(Nonterminal.LOOP);
+                }
+                else if (getWordKind(terminals.get(0)).equals(WordKind.valName)) {
+                    popTerminal(); // 移除变量名
+                    updateLine();
+                    return parse(Nonterminal.ASSIGNMENT);
+                }
+                else if ("if".equals(getWordName(terminals.get(0)))) {
+                    popTerminal(); // 移除if
+                    updateLine();
+                    return parse(Nonterminal.BRANCH);
+                }
+                return parse(Nonterminal.BODY);
+            }
+            case LOOP: {
+                parse(Nonterminal.LOGIC);
+                if ("{".equals(getWordName(terminals.get(0)))) {
+                    popTerminal();
+                    updateLine();
+                    parse(Nonterminal.BODY);
+                }
+                else {
+                    throwExceptionWithLine("missing {",Nonterminal.LOOP);
+                }
+                if ("}".equals(getWordName(terminals.get(0)))) {
+                    popTerminal();
+                    updateLine();
+                    return true;
+                }
+                else {
+                    throwExceptionWithLine("missing }",Nonterminal.LOOP);
+                }
+            }
+            case LOGIC: { // LOGIC -> valName {operator - =} {valName | constNum} | valName | ε
+                if("(".equals(getWordName(terminals.get(0)))) {
+                    popTerminal(); // 移除左括号
+                    updateLine();
+                    if (WordKind.valName.equals(getWordKind(terminals.get(0)))) {
+                        popTerminal(); // 移除变量名
+                        if (")".equals(getWordName(terminals.get(0)))) { // valName
+                            popTerminal(); // 移除右括号
+                            updateLine();
+                            return true;
+                        }
+                        else if (WordKind.operator.equals(getWordKind(terminals.get(0)))) {
+                            popTerminal(); // 移除运算符
+                            updateLine();
+                            if (WordKind.valName.equals(getWordKind(terminals.get(0)))||
+                                    WordKind.constNum.equals(getWordKind(terminals.get(0)))) {
+                                popTerminal();// 移除常数或变量
+                                updateLine();
+                            }
+                            else {
+                                throwExceptionWithLine("missing valname or constNum", Nonterminal.LOGIC);
+                            }
+                            if (")".equals(getWordName(terminals.get(0)))) {
+                                popTerminal();
+                                updateLine();
+                                return true;
+                            }
+                            else {
+                                throwExceptionWithLine("missing )",Nonterminal.LOGIC);
+                            }
+                        }
+                        else {
+                            throwExceptionWithLine("invalid logic", Nonterminal.LOGIC);
+                        }
+                    }
+                    else if (")".equals(getWordName(terminals.get(0)))) {
+                        popTerminal();
+                        updateLine();
+                        return true;
+                    }
+                    else {
+                        throwExceptionWithLine("invalid logic without valname",Nonterminal.LOGIC);
+                    }
+                }
+                else {
+                    throwExceptionWithLine("missing (",Nonterminal.LOGIC);
+                }
+            }
+            case ASSIGNMENT: {
+                if ("=".equals(getWordName(terminals.get(0)))) {
+                    popTerminal();// 移除等于号
+                    updateLine();
+                    parse(Nonterminal.OPERATION);
+                    updateLine();
+                    if (";".equals(getWordName(terminals.get(0)))) {
+                        return true;
+                    }
+                    else {
+                        throwExceptionWithLine("missing ;", Nonterminal.ASSIGNMENT);
+                    }
+                }
+                else {
+                    throwExceptionWithLine("invalid assignment",Nonterminal.ASSIGNMENT);
+                }
             }
             default:
                 return false;

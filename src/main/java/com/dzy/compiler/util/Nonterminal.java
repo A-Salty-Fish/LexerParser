@@ -25,7 +25,7 @@ public enum Nonterminal {
     FUNCTIONARGS -> valName \, FUNCTIONARGS | valName | ε
     BODY -> { while LOOP | valName ASSIGNMENT | if BRANCH } BODY | ε
     LOOP -> \( LOGIC \) \{ BODY \} |
-    LOGIC -> valName {operator - =} LOGIC | valName | ε
+    LOGIC -> valName {operator - =} {valName | constNum} | valName | ε
     ASSIGNMENT ->  \= OPERATION ;
     OPERATION -> { constNum | valName } operator OPERATION | constNum | valName
     BRANCH -> \( LOGIC \) \{ BODY \} else \{ BODY \} | if \( LOGIC \) \{ BODY \}
