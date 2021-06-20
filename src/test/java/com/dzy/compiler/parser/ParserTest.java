@@ -47,7 +47,7 @@ public class ParserTest {
             results = lexer.lex(lexer.readFile("E:\\\\data.txt"));
             Parser parser = new Parser();
             List<String> terminals = parser.wordsToTerminal(results);
-            parser.parse(Nonterminal.START);
+            System.out.println(parser.parse(Nonterminal.START));
         } catch (LexerException | ParserException e) {
             System.out.println(e.getMessage());
         }
