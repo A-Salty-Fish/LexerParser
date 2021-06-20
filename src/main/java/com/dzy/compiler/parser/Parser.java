@@ -40,6 +40,7 @@ public class Parser {
     // 更新读头
     private void popTerminal() {
         if (terminals.size()!=0) {
+//            System.out.println(terminals.get(0));
             terminals.remove(0);
             updateLine();
         }
@@ -146,6 +147,9 @@ public class Parser {
             }
             case BODY: {
                 updateLine();
+                if (terminals.size()==1) {
+                    return false;
+                }
                 // ε
                 if ("}".equals(getWordName(terminals.get(0)))) {
                     return true;
@@ -155,17 +159,17 @@ public class Parser {
                 if ("while".equals(getWordName(terminals.get(0)))) {
                     popTerminal(); // 移除while
                     updateLine();
-                    return parse(Nonterminal.LOOP);
+                    parse(Nonterminal.LOOP);
                 }
                 else if (getWordKind(terminals.get(0)).equals(WordKind.valName)) {
                     popTerminal(); // 移除变量名
                     updateLine();
-                    return parse(Nonterminal.ASSIGNMENT);
+                    parse(Nonterminal.ASSIGNMENT);
                 }
                 else if ("if".equals(getWordName(terminals.get(0)))) {
                     popTerminal(); // 移除if
                     updateLine();
-                    return parse(Nonterminal.BRANCH);
+                    parse(Nonterminal.BRANCH);
                 }
                 return parse(Nonterminal.BODY);
             }
@@ -175,18 +179,19 @@ public class Parser {
                     popTerminal();
                     updateLine();
                     parse(Nonterminal.BODY);
+                    if ("}".equals(getWordName(terminals.get(0)))) {
+                        popTerminal();
+                        updateLine();
+                        return true;
+                    }
+                    else {
+                        throwExceptionWithLine("missing }",Nonterminal.LOOP);
+                    }
                 }
                 else {
                     throwExceptionWithLine("missing {",Nonterminal.LOOP);
                 }
-                if ("}".equals(getWordName(terminals.get(0)))) {
-                    popTerminal();
-                    updateLine();
-                    return true;
-                }
-                else {
-                    throwExceptionWithLine("missing }",Nonterminal.LOOP);
-                }
+                break;
             }
             case LOGIC: { // LOGIC -> valName {operator - =} {valName | constNum} | valName | ε
                 if("(".equals(getWordName(terminals.get(0)))) {
@@ -235,6 +240,7 @@ public class Parser {
                 else {
                     throwExceptionWithLine("missing (",Nonterminal.LOGIC);
                 }
+                break;
             }
             case ASSIGNMENT: {
                 if ("=".equals(getWordName(terminals.get(0)))) {
@@ -253,6 +259,7 @@ public class Parser {
                 else {
                     throwExceptionWithLine("invalid assignment",Nonterminal.ASSIGNMENT);
                 }
+                break;
             }
             case OPERATION: { // OPERATION -> { constNum | valName } operator OPERATION | constNum | valName
                 if (WordKind.valName.equals(getWordKind(terminals.get(0)))||
@@ -273,9 +280,46 @@ public class Parser {
                 else {
                     throwExceptionWithLine("invalid operatrion", Nonterminal.OPERATION);
                 }
+                break;
             }
+            // BRANCH -> \( LOGIC \) \{ BODY \} else \{ BODY \} | if \( LOGIC \) \{ BODY \}
             case BRANCH: {
-
+                parse(Nonterminal.LOGIC);
+                updateLine();
+                if ("{".equals(getWordName(terminals.get(0)))) {
+                    popTerminal();
+                    updateLine();
+                    parse(Nonterminal.BODY);
+                    if ("}".equals(getWordName(terminals.get(0)))) {
+                        popTerminal();
+                        updateLine();
+                    }
+                    else {
+                        throwExceptionWithLine("missing }",Nonterminal.BRANCH);
+                    }
+                    updateLine();
+                    if ("else".equals(getWordName(terminals.get(0)))) {
+                        popTerminal();
+                        updateLine();
+                        if ("{".equals(getWordName(terminals.get(0)))) {
+                            popTerminal();
+                            updateLine();
+                            parse(Nonterminal.BODY);
+                            if ("}".equals(getWordName(terminals.get(0)))) {
+                                popTerminal();
+                                updateLine();
+                                return true;
+                            }
+                            else {
+                                throwExceptionWithLine("missing }",Nonterminal.BRANCH);
+                            }
+                        }
+                    }
+                }
+                else {
+                    throwExceptionWithLine("missing {",Nonterminal.BRANCH);
+                }
+                return true;
             }
             default:
                 return false;
