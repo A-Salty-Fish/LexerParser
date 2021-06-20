@@ -243,6 +243,7 @@ public class Parser {
                     parse(Nonterminal.OPERATION);
                     updateLine();
                     if (";".equals(getWordName(terminals.get(0)))) {
+                        popTerminal();//移除分号
                         return true;
                     }
                     else {
@@ -252,6 +253,29 @@ public class Parser {
                 else {
                     throwExceptionWithLine("invalid assignment",Nonterminal.ASSIGNMENT);
                 }
+            }
+            case OPERATION: { // OPERATION -> { constNum | valName } operator OPERATION | constNum | valName
+                if (WordKind.valName.equals(getWordKind(terminals.get(0)))||
+                WordKind.constNum.equals(getWordKind(terminals.get(0)))) {
+                    popTerminal();
+                    updateLine();
+                    if (";".equals(getWordName(terminals.get(0)))) {
+                        return true;
+                    }
+                    else {
+                        if (WordKind.operator.equals(getWordKind(terminals.get(0)))) {
+                            popTerminal();
+                            updateLine();
+                            parse(Nonterminal.OPERATION);
+                        }
+                    }
+                }
+                else {
+                    throwExceptionWithLine("invalid operatrion", Nonterminal.OPERATION);
+                }
+            }
+            case BRANCH: {
+
             }
             default:
                 return false;
